@@ -1,0 +1,14 @@
+# Python stuff
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+env/
+
+# Database and media
+db.sqlite3
+media/
+
+# Security and local configuration
+.env

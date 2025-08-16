@@ -1,0 +1,425 @@
+<!-- --- file: app/templates/app/creator_profile.html --- -->
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+/* Profile Container */
+.profile-container {
+    width: 550px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+}
+
+/* Profile Header */
+.profile-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.profile-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 20px;
+    border: 3px solid #ffffff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.profile-image:hover {
+    transform: scale(1.03);
+}
+
+.profile-title {
+    font-size: 2.2em;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+.profile-subtitle {
+    font-size: 1.1em;
+    color: #666;
+    margin-top: 12px;
+    line-height: 1.6;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Profile Section */
+.profile-section {
+    margin-bottom: 40px;
+}
+
+.section-title {
+    font-size: 1.5em;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 20px;
+    position: relative;
+    padding-bottom: 8px;
+}
+
+.section-title::after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, #6366f1, #8b5cf6);
+    border-radius: 2px;
+}
+
+/* Donation Form */
+.donation-form {
+    background-color: #f9fafb;
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.donation-form:hover {
+    border-color: #d1d5db;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.95em;
+    font-weight: 500;
+    color: #4b5563;
+    margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 0.95em;
+    font-family: 'Inter', sans-serif;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background-color: #ffffff;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #a5b4fc;
+    box-shadow: 0 0 0 3px rgba(165, 180, 252, 0.2);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Modern Button Styles */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    font-size: 0.95em;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    border: none;
+    outline: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary {
+    background-color: #6366f1;
+    color: white;
+    box-shadow: 0 2px 5px rgba(99, 102, 241, 0.2);
+}
+
+.btn-primary:hover {
+    background-color: #4f46e5;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    background-color: white;
+    color: #4b5563;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.btn-secondary:hover {
+    background-color: #f9fafb;
+    border-color: #d1d5db;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+}
+
+.btn-full {
+    width: 100%;
+    padding: 12px;
+}
+
+.btn-icon {
+    margin-right: 8px;
+}
+
+/* Content Section */
+.profile-section p {
+    font-size: 1.05em;
+    color: #4b5563;
+    line-height: 1.7;
+}
+
+.profile-section a {
+    color: #6366f1;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.profile-section a:hover {
+    color: #4f46e5;
+    text-decoration: underline;
+}
+
+/* Stats */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.stat-card {
+    background: #f9fafb;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    border: 1px solid #e5e7eb;
+}
+
+.stat-value {
+    font-size: 1.5em;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 0.85em;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 25px 15px;
+    }
+
+    .profile-title {
+        font-size: 1.8em;
+    }
+
+    .profile-image {
+        width: 100px;
+        height: 100px;
+    }
+
+    .section-title {
+        font-size: 1.3em;
+    }
+
+    .donation-form {
+        padding: 20px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+@media (max-width: 480px) {
+    .profile-title {
+        font-size: 1.6em;
+    }
+
+    .profile-subtitle {
+        font-size: 1em;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        font-size: 0.9em;
+    }
+}
+
+
+/* QR Code styles */
+.qr-code-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;   /* centers horizontally */
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-top: 20px;
+}
+
+.qr-code-section > div {
+    margin: 10px auto 0 auto; /* centers QR code itself */
+}
+.qr-code-section canvas,
+.qr-code-section img {
+    display: block;
+    margin: 0 auto;   /* forces center */
+}
+
+
+.qr-code-note {
+    font-size: 0.9em;
+    color: #666;
+}
+.upi-link {
+    display: inline-block;
+    margin-top: 15px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.upi-link:hover {
+    transform: scale(1.05);
+}
+
+.upi-icon {
+    width: 50px; /* Adjust size as needed */
+    height: auto;
+}
+</style>
+
+<main class="main-content">
+    <div class="profile-container">
+        <div class="profile-header">
+            {% if creator.creatorprofile.profile_image %}
+                <img class="profile-image" src="{{ creator.creatorprofile.profile_image.url }}" alt="{{ creator.username }}'s profile image">
+            {% endif %}
+            <h1 class="profile-title">{{ creator.username }}</h1>
+            <p class="profile-subtitle">{{ creator.creatorprofile.bio }}</p>
+        </div>
+        
+        <!-- Donation section is visible to everyone -->
+        <div class="profile-section">
+            <h2 class="section-title">Support me!</h2>
+            <form class="donation-form" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="amount">Amount (₹)</label>
+                    <input type="number" id="amount" name="amount" value="100" min="1" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full" id="generate-qr-button">
+                    <span class="btn-icon">🤍</span> Generate QR Code
+                </button>
+            </form>
+            
+            {% if profile.upi_id %}
+            <div id="qr-code-container" class="qr-code-section" style="display: none;">
+                <p class="qr-code-note">Scan the QR code to pay via UPI or click the icon to pay in app</p>
+            </div>
+            {% else %}
+            <div class="qr-code-section">
+                <p class="qr-code-note">This creator has not set up a UPI ID yet.</p>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const generateButton = document.getElementById('generate-qr-button');
+        const upiId = "{{ profile.upi_id }}";
+        const qrCodeContainer = document.getElementById("qr-code-container");
+        const amountInput = document.getElementById("amount");
+
+        if (generateButton) {
+            generateButton.addEventListener('click', function (event) {
+                event.preventDefault();
+
+                if (!upiId) {
+                    alert("This creator has not set up a UPI ID.");
+                    return;
+                }
+
+                const amount = amountInput.value;
+                if (!amount || amount <= 0) {
+                    alert("Please enter a valid amount.");
+                    return;
+                }
+
+                // Clear any existing QR code and icon
+                qrCodeContainer.innerHTML = '<p class="qr-code-note">Scan the QR code to pay via UPI or click the icon to pay in app</p>';
+
+                const upiUrl = `upi://pay?pa=${upiId}&am=${amount}&pn={{ creator.username }}`;
+
+                const qrCodeDiv = document.createElement('div');
+                qrCodeContainer.appendChild(qrCodeDiv);
+
+                new QRCode(qrCodeDiv, {
+                    text: upiUrl,
+                    width: 200,
+                    height: 200,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+
+                // This is the new part that was in the wrong place.
+                // It needs to be inside this function.
+                const upiLink = document.createElement('a');
+                upiLink.href = upiUrl;
+                upiLink.className = 'upi-link';
+
+                const upiIcon = document.createElement('img');
+                upiIcon.src = "{% static 'app/upi_icon.png' %}";
+                upiIcon.alt = "Pay via UPI";
+                upiIcon.className = 'upi-icon';
+                upiLink.appendChild(upiIcon);
+
+                qrCodeContainer.appendChild(upiLink);
+
+                // Use the 'flex' display to properly center the QR and icon.
+                qrCodeContainer.style.display = 'flex';
+            });
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,91 @@
+<!-- --- file: app/templates/app/home.html --- -->
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Hero Section Styles */
+    .hero-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 80px); /* Adjust height for the header */
+        padding: 2rem 1.5rem;
+        text-align: center;
+    }
+    
+    .hero-content {
+        max-width: 800px;
+        padding: 2rem;
+        /* background-color: var(--color-surface); */
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--color-text-primary);
+    }
+    
+    .hero-subtitle {
+        font-size: 1.25rem;
+        color: var(--color-text-secondary);
+        margin-bottom: 2rem;
+    }
+    
+    .hero-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    /* Button Animations */
+    .cta-button {
+        transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+        background-color: rgb(66, 115, 200);
+        color: white;
+    }
+    
+    .cta-button:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .secondary-button {
+        transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .secondary-button:hover {
+        transform: translateY(-3px) scale(1.02);
+        background-color: var(--color-background);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+<div class="hero-container">
+    <div class="hero-content">
+        <h1 class="hero-title">Support Your Favorite Creators</h1>
+        <p class="hero-subtitle">
+            Fund their projects, buy them a coffee, or just show some love. It's easy, fast, and uses UPI.
+        </p>
+        <div class="hero-buttons">
+            {% if user.is_authenticated %}
+            <a href="{% url 'app:landing' %}" class="cta-button">Go to Dashboard</a>
+            {% else %}
+            <a href="{% url 'app:login' %}" class="cta-button">Start a Page</a>
+            {% endif %}
+            <a href="{% url 'app:community' %}" class="cta-button">Find a Creator</a>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

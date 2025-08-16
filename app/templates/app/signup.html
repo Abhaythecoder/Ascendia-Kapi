@@ -1,0 +1,312 @@
+<!-- --- file: app/templates/app/signup.html --- -->
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+/* Enhanced Signup Page - Clean & Professional */
+
+:root {
+    /* Color Palette */
+    --color-bg: #ffffff;
+    --color-surface: #f7f8fa;
+    --color-primary: #4f46e5;
+    --color-primary-hover: #4338ca;
+    --color-secondary: #e5e7eb;
+    --color-accent: #1f2937;
+    --color-text: #1f2937;
+    --color-text-muted: #6b7280;
+    --color-border: #e5e7eb;
+    --color-error: #ef4444;
+    
+    /* Typography */
+    --font-base: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-bold: 600;
+    --font-weight-black: 700;
+    
+    /* Spacing */
+    --space-unit: 1rem;
+    --space-xs: 0.5rem;
+    --space-sm: 0.75rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    
+    /* Borders */
+    --border-radius-sm: 0.25rem;
+    --border-radius-md: 0.5rem;
+    --border-radius-lg: 0.75rem;
+    --border-radius-pill: 9999px;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-medium: 0.3s ease;
+    --transition-slow: 0.45s ease;
+}
+
+/* Base Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-base);
+    line-height: 1.5;
+    color: var(--color-text);
+    background-color: var(--color-bg);
+}
+
+.main-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: var(--space-xl);
+    background-color: var(--color-surface);
+    background-image: linear-gradient(
+      to bottom right,
+      rgba(245, 245, 255, 0.8) 0%,
+      rgba(240, 240, 255, 0.9) 100%
+    );
+}
+
+/* Form Container */
+.form-container {
+    width: 100%;
+    max-width: 28rem;
+    padding: var(--space-xl);
+    background-color: var(--color-bg);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    margin: 0 auto;
+    transform: translateY(0);
+    transition: transform var(--transition-medium), box-shadow var(--transition-medium);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.form-container:hover {
+    transform: translateY(-0.25rem);
+    box-shadow: 
+      0 20px 25px -5px rgba(0, 0, 0, 0.1),
+      0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Form Elements */
+.form-title {
+    font-size: 1.75rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+    margin-bottom: var(--space-xs);
+    text-align: center;
+    line-height: 1.25;
+}
+
+.form-subtitle {
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-xl);
+    text-align: center;
+    line-height: 1.5;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    position: relative;
+}
+
+.form-group label {
+    font-size: 0.875rem;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text);
+}
+
+.form-group input {
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    font-size: 1rem;
+    transition: all var(--transition-medium);
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    background-color: white;
+}
+
+.form-group input::placeholder {
+    color: var(--color-text-muted);
+    opacity: 0.5;
+}
+
+/* Password Strength Indicator */
+.password-strength {
+    height: 4px;
+    background: var(--color-secondary);
+    border-radius: 2px;
+    margin-top: var(--space-xs);
+    overflow: hidden;
+}
+
+.password-strength-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--color-error);
+    transition: width var(--transition-medium), background var(--transition-medium);
+}
+
+/* Button Styles */
+.cta-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--border-radius-pill);
+    font-weight: var(--font-weight-bold);
+    text-decoration: none;
+    transition: all var(--transition-medium);
+    cursor: pointer;
+    border: none;
+}
+
+.cta-button.primary {
+    background-color: var(--color-primary);
+    color: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.cta-button.primary:hover {
+    background-color: var(--color-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.cta-button.full-width {
+    width: 100%;
+    padding: var(--space-md);
+    margin-top: var(--space-xs);
+}
+
+/* Footer Links */
+.form-footer {
+    text-align: center;
+    margin-top: var(--space-xl);
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+}
+
+.form-link {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: var(--font-weight-medium);
+    transition: color var(--transition-fast);
+    position: relative;
+}
+
+.form-link:hover {
+    color: var(--color-primary-hover);
+    text-decoration: underline;
+}
+
+/* Error Messages */
+.error-message {
+    color: var(--color-error);
+    font-size: 0.8125rem;
+    margin-top: var(--space-xs);
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+    .main-content {
+      padding: var(--space-md);
+      background-image: none;
+    }
+    
+    .form-container {
+      padding: var(--space-lg) var(--space-md);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .form-title {
+      font-size: 1.5rem;
+    }
+}
+</style>
+
+<main class="main-content">
+    <div class="form-container">
+        <h1 class="form-title">Create your account</h1>
+        <p class="form-subtitle">Join us to start supporting creators today.</p>
+        
+        <form class="form" method="post" action="{% url 'app:signup' %}">
+            {% csrf_token %}
+            
+            {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                        <p class="error-message">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            {% endfor %}
+            
+            <button type="submit" class="cta-button primary full-width">Sign Up</button>
+        </form>
+        
+        <p class="form-footer">
+            Already have an account? <a href="{% url 'app:login' %}" class="form-link">Log in here</a>
+        </p>
+    </div>
+</main>
+
+<script>
+// Simple password strength indicator
+document.getElementById('password').addEventListener('input', function(e) {
+    const password = e.target.value;
+    const strengthBar = document.getElementById('password-strength-bar');
+    let strength = 0;
+    
+    if (password.length > 0) strength += 20;
+    if (password.length >= 8) strength += 30;
+    if (/[A-Z]/.test(password)) strength += 15;
+    if (/[0-9]/.test(password)) strength += 15;
+    if (/[^A-Za-z0-9]/.test(password)) strength += 20;
+    
+    strengthBar.style.width = Math.min(strength, 100) + '%';
+    
+    // Change color based on strength
+    if (strength < 40) {
+        strengthBar.style.backgroundColor = '#ef4444'; // red
+    } else if (strength < 70) {
+        strengthBar.style.backgroundColor = '#f59e0b'; // amber
+    } else {
+        strengthBar.style.backgroundColor = '#10b981'; // emerald
+    }
+});
+</script>
+{% endblock %}

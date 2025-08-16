@@ -1,0 +1,128 @@
+<!-- --- file: app/templates/app/find_creator.html --- -->
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .community-container {
+        max-width: 1000px;
+        margin: 2rem auto;
+        padding: 0 1.5rem;
+    }
+
+    .community-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .community-title {
+        font-size: 2.5em;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--color-text-primary);
+    }
+
+    .search-form {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 2rem;
+    }
+
+    .search-input {
+        width: 100%;
+        max-width: 500px;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--color-border);
+        border-radius: 9999px;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+        background-color: var(--color-surface);
+        color: var(--color-text-primary);
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 3px rgba(82, 103, 255, 0.1);
+    }
+
+    .creator-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .creator-card {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+        text-align: center;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        text-decoration: none;
+        color: var(--color-text-primary);
+        border: 1px solid var(--color-border);
+    }
+    
+    .creator-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .card-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 1rem;
+        border: 2px solid var(--color-primary);
+    }
+
+    .card-username {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-bio {
+        font-size: 0.9rem;
+        color: var(--color-text-secondary);
+        line-height: 1.4;
+    }
+
+    .no-creators {
+        text-align: center;
+        color: var(--color-text-secondary);
+        font-style: italic;
+    }
+</style>
+
+<main class="main-content">
+    <div class="community-container">
+        <div class="community-header">
+            <h1 class="community-title">Find a Creator</h1>
+            <p class="text-lg text-gray-600">Discover and support talented creators from India.</p>
+        </div>
+        
+        <form class="search-form" method="get">
+            <input type="text" name="q" class="search-input" placeholder="Search creators..." value="{{ query|default:'' }}">
+        </form>
+
+        <div class="creator-grid">
+            {% for creator in creators %}
+            <a href="{% url 'app:creator_profile' username=creator.username %}" class="creator-card">
+                {% if creator.creatorprofile.profile_image %}
+                    <img src="{{ creator.creatorprofile.profile_image.url }}" alt="{{ creator.username }}'s profile image" class="card-image">
+                {% else %}
+                    <img src="https://placehold.co/80x80/5267FF/FFFFFF?text={{ creator.username|slice:":1"|upper }}" alt="Placeholder" class="card-image">
+                {% endif %}
+                <h3 class="card-username">{{ creator.username }}</h3>
+                <p class="card-bio">{{ creator.creatorprofile.bio|truncatechars:80 }}</p>
+            </a>
+            {% empty %}
+            <p class="no-creators">No creators found.</p>
+            {% endfor %}
+        </div>
+    </div>
+</main>
+{% endblock %}
