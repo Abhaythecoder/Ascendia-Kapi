@@ -12,3 +12,4 @@ media/
 
 # Security and local configuration
 .env
+staticfiles/
