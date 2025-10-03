@@ -7,8 +7,6 @@ from django.dispatch import receiver
 class CreatorProfile(models.Model):
     """
     A profile for creators to store their public information.
-    
-    Each user will have a CreatorProfile automatically created.
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     upi_id = models.CharField(max_length=255, blank=True, null=True, unique=True,
@@ -26,3 +24,33 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
     Automatically creates a CreatorProfile when a new User is created.
     """
     CreatorProfile.objects.get_or_create(user=instance)
+
+class DonationAttempt(models.Model):
+    """
+    Tracks each time a QR code is generated for a payment.
+    """
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='donation_attempts')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.creator.username} - ₹{self.amount} ({self.timestamp.date()})'
+
+class Analytics(models.Model):
+    """
+    Stores analytics data for each creator.
+    """
+    creator = models.OneToOneField(User, on_delete=models.CASCADE)
+    page_views = models.PositiveIntegerField(default=0)
+    qr_generations = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return f'{self.creator.username} Analytics'
+
+@receiver(post_save, sender=User)
+def create_analytics(sender, instance, created, **kwargs):
+    """
+    Automatically creates an Analytics object for a new user.
+    """
+    if created:
+        Analytics.objects.create(creator=instance)

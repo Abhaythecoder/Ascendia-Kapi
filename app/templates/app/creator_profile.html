@@ -337,16 +337,17 @@
         <!-- Donation section is visible to everyone -->
         <div class="profile-section">
             <h2 class="section-title">Support me!</h2>
-            <form class="donation-form" method="post">
+            <form class="donation-form" method="post" action="{% url 'app:qr_generate_api' creator.username %}">
                 {% csrf_token %}
                 <div class="form-group">
                     <label for="amount">Amount (₹)</label>
                     <input type="number" id="amount" name="amount" value="100" min="1" required>
                 </div>
-                <button type="submit" class="btn btn-primary btn-full" id="generate-qr-button">
+                <button type="button" class="btn btn-primary btn-full" id="generate-qr-button">
                     <span class="btn-icon">🤍</span> Generate QR Code
                 </button>
             </form>
+
             
             {% if profile.upi_id %}
             <div id="qr-code-container" class="qr-code-section" style="display: none;">
@@ -363,63 +364,96 @@
 </main>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const generateButton = document.getElementById('generate-qr-button');
+    const upiId = "{{ profile.upi_id }}";
+    const creatorUsername = "{{ creator.username }}"; // template variable
+    const qrCodeContainer = document.getElementById("qr-code-container");
+    const amountInput = document.getElementById("amount");
+    let qrGenerating = false;
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const generateButton = document.getElementById('generate-qr-button');
-        const upiId = "{{ profile.upi_id }}";
-        const qrCodeContainer = document.getElementById("qr-code-container");
-        const amountInput = document.getElementById("amount");
-
-        if (generateButton) {
-            generateButton.addEventListener('click', function (event) {
-                event.preventDefault();
-
-                if (!upiId) {
-                    alert("This creator has not set up a UPI ID.");
-                    return;
+    const donationForm = document.querySelector('.donation-form');
+    function handleGenerate(event) {
+        if (event) event.preventDefault();
+            if (generateButton.disabled || qrGenerating) {
+                return;
+            }
+            if (!upiId) {
+                alert("This creator has not set up a UPI ID.");
+                return;
+            }
+            const amount = amountInput.value;
+            if (!amount || amount <= 0) {
+                alert("Please enter a valid amount.");
+                return;
+            }
+            // Disable button and set flag
+            generateButton.disabled = true;
+            qrGenerating = true;
+            // Clear previous QR and link
+            qrCodeContainer.innerHTML = '<p class="qr-code-note">Scan the QR code to pay via UPI or click the icon to pay in app</p>';
+            // POST request to Django API
+            fetch(`/qr-generate/${creatorUsername}/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: `amount=${amount}`
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const upiUrl = data.upi_url;
+                    // Generate QR code
+                    const qrCodeDiv = document.createElement('div');
+                    qrCodeContainer.appendChild(qrCodeDiv);
+                    new QRCode(qrCodeDiv, {
+                        text: upiUrl,
+                        width: 200,
+                        height: 200,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                    // Generate clickable UPI icon
+                    const upiLink = document.createElement('a');
+                    upiLink.href = upiUrl;
+                    upiLink.className = 'upi-link';
+                    const upiIcon = document.createElement('img');
+                    upiIcon.src = "{% static 'app/upi_icon.png' %}{% if static_version %}?v={{ static_version }}{% endif %}";
+                    upiIcon.alt = "Pay via UPI";
+                    upiIcon.className = 'upi-icon';
+                    upiLink.appendChild(upiIcon);
+                    qrCodeContainer.appendChild(upiLink);
+                    qrCodeContainer.style.display = 'flex';
+                } else {
+                    alert(data.error);
                 }
-
-                const amount = amountInput.value;
-                if (!amount || amount <= 0) {
-                    alert("Please enter a valid amount.");
-                    return;
-                }
-
-                // Clear any existing QR code and icon
-                qrCodeContainer.innerHTML = '<p class="qr-code-note">Scan the QR code to pay via UPI or click the icon to pay in app</p>';
-
-                const upiUrl = `upi://pay?pa=${upiId}&am=${amount}&pn={{ creator.username }}`;
-
-                const qrCodeDiv = document.createElement('div');
-                qrCodeContainer.appendChild(qrCodeDiv);
-
-                new QRCode(qrCodeDiv, {
-                    text: upiUrl,
-                    width: 200,
-                    height: 200,
-                    colorDark: "#000000",
-                    colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.H
-                });
-
-                // This is the new part that was in the wrong place.
-                // It needs to be inside this function.
-                const upiLink = document.createElement('a');
-                upiLink.href = upiUrl;
-                upiLink.className = 'upi-link';
-
-                const upiIcon = document.createElement('img');
-                upiIcon.src = "{% static 'app/upi_icon.png' %}";
-                upiIcon.alt = "Pay via UPI";
-                upiIcon.className = 'upi-icon';
-                upiLink.appendChild(upiIcon);
-
-                qrCodeContainer.appendChild(upiLink);
-
-                // Use the 'flex' display to properly center the QR and icon.
-                qrCodeContainer.style.display = 'flex';
+            })
+            .catch(err => {
+                console.error(err);
+                alert("An error occurred while generating QR code.");
+            })
+            .finally(() => {
+                // Button stays disabled until amount changes
+                qrGenerating = false;
             });
         }
+    
+    if (generateButton) {
+        generateButton.addEventListener('click', handleGenerate);
+    }
+
+    // Also handle form submit (Enter key) and prevent default navigation
+    if (donationForm) {
+        donationForm.addEventListener('submit', handleGenerate);
+    }
+
+    // Re-enable button when amount changes
+    amountInput.addEventListener('input', function () {
+        generateButton.disabled = false;
     });
+});
 </script>
 {% endblock %}

@@ -1,11 +1,9 @@
-<!-- --- file: app/templates/app/landing.html --- -->
 {% extends 'app/base.html' %}
 {% load static %}
 
 {% block content %}
 <style>
-/* Professional Dashboard Theme */
-
+/* Professional Theme */
 :root {
   /* Color Palette */
   --color-bg: #ffffff;
@@ -34,6 +32,7 @@
   --space-md: 1rem;
   --space-lg: 1.5rem;
   --space-xl: 2rem;
+  --space-2xl: 3rem;
   
   /* Borders */
   --border-radius-sm: 0.25rem;
@@ -210,12 +209,12 @@ body {
     margin-right: var(--space-xs);
 }
 
-
 /* Main Content */
 .main-content {
   flex: 1;
   margin-left: var(--sidebar-width);
   transition: margin-left var(--transition-medium);
+  background-color: var(--color-surface);
 }
 
 /* Header */
@@ -232,120 +231,141 @@ body {
   z-index: 40;
 }
 
-.page-title {
-  font-size: 1.25rem;
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text);
-}
-
-.action-bar {
-    display: flex;
-    gap: var(--space-md);
-    margin-bottom: var(--space-lg);
-}
-
-.action-btn {
-    background-color: var(--color-bg);
-    border: 1px solid var(--color-border);
-    border-radius: var(--border-radius-md);
-    padding: var(--space-sm) var(--space-md);
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-    color: var(--color-text-muted);
-    text-decoration: none;
-    transition: all var(--transition-fast);
-}
-
-.action-btn:hover {
-    background-color: var(--color-secondary);
-    color: var(--color-accent);
-}
-
-.action-icon {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-}
-
 /* Dashboard Content */
 .dashboard-content {
-  padding: var(--space-xl);
-  background-color: var(--color-surface);
+  padding: var(--space-2xl);
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
 }
 
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-lg);
-  margin-bottom: var(--space-xl);
+/* Dashboard Header */
+.dashboard-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
 }
 
-.card {
-  background-color: var(--color-bg);
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-sm);
-  padding: var(--space-lg);
-  transition: transform var(--transition-medium), box-shadow var(--transition-medium);
+.page-title {
+  font-size: 2rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  margin-bottom: var(--space-sm);
 }
 
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-md);
-}
-
-.card-title {
-  font-size: 1rem;
-  font-weight: var(--font-weight-medium);
+.page-subtitle {
   color: var(--color-text-muted);
+  font-size: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Stats Container */
+.stats-container {
+  width: 100%;
+}
+
+/* Stat Grid */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-lg);
+  margin-bottom: var(--space-2xl);
+}
+
+/* Stat Card */
+.stat-card {
+  position: relative;
+  padding: var(--space-xl);
+  border-left: 4px solid var(--color-primary);
+  background: var(--color-bg);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-medium);
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  background-color: rgba(79, 70, 229, 0.1);
+  border-radius: var(--border-radius-pill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: var(--space-md);
 }
 
-.card-graph .card-title, .card-ranking .card-title, .card-popular .card-title {
-    margin-bottom: var(--space-xl);
+.stat-icon svg {
+  width: 24px;
+  height: 24px;
+  color: var(--color-primary);
 }
 
-.card-stats {
-    display: flex;
-    flex-direction: column;
+.stat-label {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-xs);
+  font-weight: var(--font-weight-medium);
 }
 
-.stats-value {
-    font-size: 2rem;
-    font-weight: var(--font-weight-bold);
-    margin-bottom: var(--space-sm);
+.stat-value {
+  font-size: 2.25rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  margin-bottom: var(--space-sm);
+  line-height: 1.2;
 }
 
-.stats-change {
-    display: flex;
-    align-items: center;
-    font-size: 0.875rem;
+.stat-description {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-top: var(--space-xs);
 }
 
-.change-positive {
-    color: var(--color-success);
+/* Dashboard Actions */
+.dashboard-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-xl);
 }
 
-.change-negative {
-    color: var(--color-error);
+.cta-button {
+  background-image: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+  color: white;
+  border: none;
+  padding: var(--space-md) var(--space-xl);
+  border-radius: var(--border-radius-pill);
+  font-weight: var(--font-weight-bold);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all var(--transition-medium);
+  box-shadow: var(--shadow-md);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
 }
 
-.graph-placeholder {
-    height: 150px;
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--border-radius-md);
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
-.ranking-placeholder, .popular-placeholder {
-    height: 250px;
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--border-radius-md);
+.cta-button .action-icon {
+  width: 20px;
+  height: 20px;
 }
-
 
 /* Responsive Design */
+@media (max-width: 1200px) {
+  .stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 1024px) {
   .sidebar {
     width: var(--sidebar-collapsed);
@@ -379,10 +399,6 @@ body {
   .main-content {
     margin-left: var(--sidebar-collapsed);
   }
-
-  .card-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 768px) {
@@ -410,10 +426,20 @@ body {
 
   .main-content {
     margin-left: 0;
+    padding: var(--space-lg);
   }
 
-  .card-grid {
+  .stat-grid {
     grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+  
+  .page-title {
+    font-size: 1.5rem;
+  }
+  
+  .stat-value {
+    font-size: 2rem;
   }
 }
 </style>
@@ -422,7 +448,7 @@ body {
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="sidebar-logo"> Greetings, {{ user.username }}</div>
+            <div class="sidebar-logo">Greetings, {{ user.username }}</div>
         </div>
         <nav class="sidebar-nav">
             <div class="nav-section">
@@ -457,10 +483,10 @@ body {
                 </a>
             </div>
             
-            <!-- New Community Section -->
+            <!-- Community Section -->
             <div class="nav-section">
                 <div class="nav-section-title">Community</div>
-                <a href="{% url 'app:community' %}" class="nav-link">
+                <a href="{% url 'app:find_creator' %}" class="nav-link">
                     <!-- Search Icon -->
                     <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -487,26 +513,77 @@ body {
 
     <!-- Main Content -->
     <main class="main-content">
-        <header class="header">
-        </header>
         <div class="dashboard-content">
+            <div class="dashboard-header">
+                <h1 class="page-title">Analytics Dashboard</h1>
+                <p class="page-subtitle">Track your performance and earnings</p>
+            </div>
             
-
-            <div class="card-grid">
-                <div class="card card-stats">
-                    <h3 class="card-title">Total Donations</h3>
-                    <div class="stats-value">1,135</div>
-                    <div class="stats-change change-positive">10%</div>
+            <div class="stats-container">
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </div>
+                        <p class="stat-label">Page Views</p>
+                        <h3 class="stat-value">{{ page_views }}</h3>
+                        <p class="stat-description">Total views on your profile</p>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                        </div>
+                        <p class="stat-label">QR Codes Generated</p>
+                        <h3 class="stat-value">{{ qr_generations }}</h3>
+                        <p class="stat-description">QR codes created</p>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <p class="stat-label">Total Possible Earnings</p>
+                        <h3 class="stat-value">₹{{ total_amount_generated|floatformat:2 }}</h3>
+                        <p class="stat-description">Potential earnings from views</p>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                            </svg>
+                        </div>
+                        <p class="stat-label">Highest Possible Earning</p>
+                        <h3 class="stat-value">₹{{ highest_amount|floatformat:2 }}</h3>
+                        <p class="stat-description">Highest single earning</p>
+                    </div>
                 </div>
-                <div class="card card-popular">
-                    <h3 class="card-title">Highest Donations</h3>
-                    <!-- Placeholder for popular content -->
-                    <div class="popular-placeholder"></div>
+
+                <div class="dashboard-actions">
+                    <form action="{% url 'app:reset_analytics' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="cta-button"
+                            onclick="return confirm('Are you sure you want to reset all analytics? This cannot be undone.');">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="action-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            Reset All Analytics
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     </main>
 </div>
+
 <script>
 // Toggle sidebar on mobile
 const menuToggle = document.getElementById('menuToggle');

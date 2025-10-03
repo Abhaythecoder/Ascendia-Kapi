@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ page_title }}</title>
     {% load static %}
-    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}{% if static_version %}?v={{ static_version }}{% endif %}" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{% static 'app/favicon.png' %}{% if static_version %}?v={{ static_version }}{% endif %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -58,7 +59,7 @@
     <header class="site-header">
         <div class="container header-content">
             <a href="{% url 'app:home' %}" class="logo-link">
-                <img src="{% static 'app/logo.png' %}" alt="Kapi for India Logo" class="logo-image">
+                <img src="{% static 'app/logo.png' %}{% if static_version %}?v={{ static_version }}{% endif %}" alt="Kapi for India Logo" class="logo-image">
             </a>
             <nav class="nav-links">
                 {% if user.is_authenticated %}
@@ -71,7 +72,7 @@
                         <ul class="dropdown-list">
                             <li><a href="{% url 'app:my_profile' %}" class="dropdown-item">Profile</a></li>
                             <li><a href="{% url 'app:landing' %}" class="dropdown-item">Dashboard</a></li>
-                            <li><a href="{% url 'app:community' %}" class="dropdown-item">Community</a></li>
+                            <li><a href="{% url 'app:find_creator' %}" class="dropdown-item">Community</a></li>
                             <li><a href="{% url 'app:settings' %}" class="dropdown-item">Settings</a></li>
                             <li><a href="{% url 'app:logout' %}" class="dropdown-item">Logout</a></li>
                         </ul>

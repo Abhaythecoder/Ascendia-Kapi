@@ -4,9 +4,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
+from django.db.models import Q, Max, Sum
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 from .forms import UserSignupForm, UserLoginForm, CreatorProfileForm
-from .models import CreatorProfile
+from .models import CreatorProfile, Analytics, DonationAttempt
 
 def home(request):
     """Renders the homepage."""
@@ -43,7 +45,6 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-
                 return redirect('app:landing')
             else:
                 messages.error(request, 'Invalid username or password.')
@@ -61,13 +62,29 @@ def logout_view(request):
     """Logs out the current user."""
     if request.user.is_authenticated:
         logout(request)
-        # messages.info(request, 'You have been logged out.')
+        messages.info(request, 'You have been logged out.')
     return redirect('app:home')
 
 @login_required(login_url='app:login')
 def landing(request):
-    """Renders the landing page for a logged-in user."""
-    context = {'page_title': 'Dashboard'}
+    """Renders the landing page for a logged-in user with analytics data."""
+    analytics, created = Analytics.objects.get_or_create(creator=request.user)
+    
+    total_amount_generated = DonationAttempt.objects.filter(
+        creator=request.user
+    ).aggregate(Sum('amount'))['amount__sum'] or 0
+    
+    highest_amount = DonationAttempt.objects.filter(
+        creator=request.user
+    ).aggregate(Max('amount'))['amount__max'] or 0
+    
+    context = {
+        'page_title': 'Dashboard',
+        'page_views': analytics.page_views,
+        'qr_generations': analytics.qr_generations,
+        'total_amount_generated': total_amount_generated,
+        'highest_amount': highest_amount,
+    }
     return render(request, 'app/landing.html', context)
 
 @login_required(login_url='app:login')
@@ -78,9 +95,15 @@ def my_profile(request):
     return render(request, 'app/my_profile.html', context)
 
 def creator_profile(request, username):
-    """Displays the public profile for a specific creator."""
+    """Displays the public profile for a specific creator and tracks page views."""
     user = get_object_or_404(User, username=username)
     profile = user.creatorprofile
+    
+    # Increment page view count for this creator
+    analytics, created = Analytics.objects.get_or_create(creator=user)
+    analytics.page_views += 1
+    analytics.save()
+    
     context = {'page_title': f'{username}\'s Profile', 'creator': user, 'profile': profile}
     return render(request, 'app/creator_profile.html', context)
 
@@ -130,6 +153,48 @@ def settings_view(request):
         'form': form,
     }
     return render(request, 'app/settings.html', context)
+
+@require_POST
+def qr_generate_api(request, username):
+    """
+    API endpoint to generate a QR code and record the donation attempt.
+    """
+    try:
+        creator = get_object_or_404(User, username=username)
+        amount = request.POST.get('amount')
+        
+        if not creator.creatorprofile.upi_id:
+            return JsonResponse({'success': False, 'error': 'Creator has no UPI ID.'})
+
+        if not amount or not amount.isdigit() or int(amount) <= 0:
+            return JsonResponse({'success': False, 'error': 'Invalid amount.'})
+
+        # Save the donation attempt to the database
+        DonationAttempt.objects.create(creator=creator, amount=amount)
+
+        # Increment QR generation count (optional, but requested)
+        analytics, created = Analytics.objects.get_or_create(creator=creator)
+        analytics.qr_generations += 1
+        analytics.save()
+        
+        upi_id = creator.creatorprofile.upi_id
+        upi_url = f'upi://pay?pa={upi_id}&am={amount}&pn={creator.username}'
+        
+        return JsonResponse({'success': True, 'upi_url': upi_url})
+
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+@login_required(login_url='app:login')
+def reset_analytics(request):
+    """
+    Resets all analytics data for the logged-in user.
+    """
+    if request.method == 'POST':
+        Analytics.objects.filter(creator=request.user).update(page_views=0, qr_generations=0)
+        DonationAttempt.objects.filter(creator=request.user).delete()
+    return redirect('app:landing')
+
 
 @login_required(login_url='app:login')
 def content_management(request):
