@@ -340,6 +340,15 @@ img, video, canvas, svg {
   display: block;
 }
 
+/* Center common avatar/profile pictures used across templates */
+.card-image,
+.profile-image,
+.avatar {
+  display: block;    /* ensures margin:auto centers the image */
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* Make CTAs and form controls easy to tap on mobile */
 .cta-button, .btn {
   min-height: 44px; /* recommended touch target */
